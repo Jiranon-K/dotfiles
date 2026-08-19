@@ -1,0 +1,14 @@
+# neovim runtime — ห้ามเก็บ ปล่อยให้ lazy/mason สร้างเองตอนติดตั้ง
+nvim/lua/**/local*.lua
+nvim/spell/
+nvim/.netrwhist
+
+# kitty runtime
+kitty/kitty.app-*.conf
+kitty/*.sock
+
+# ระบบ
+*.backup-*
+*.swp
+*.swo
+.DS_Store
