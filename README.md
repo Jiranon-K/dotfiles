@@ -71,7 +71,7 @@ HTML / CSS / Tailwind / Emmet, JSON / YAML, Python, Bash, Docker, Lua, Go, Rust,
 A one-line statusline for the Claude Code CLI, in the same Catppuccin Mocha palette as kitty and neovim.
 
 ```
-✿ ~/dotfiles · ⎇ main ●3 · opus 5 · ███░░ 62% · $0.42
+✿ ~/dotfiles · ⎇ main ●3 · opus 5 · ███░░ 62% · week 41% ↻3d · $0.42
 ```
 
 | Segment | Meaning |
@@ -79,8 +79,12 @@ A one-line statusline for the Claude Code CLI, in the same Catppuccin Mocha pale
 | `✿ path` | Working directory, shortened to the last two components |
 | `⎇ branch` | Git branch — green when clean, yellow with `●n` when *n* files are modified. Hidden outside a repo |
 | `model` | Active model |
-| `bar %` | Context window used — teal, peach past 70%, red past 90%. Adapts to the 200k / 1M window |
+| `bar %` | Context window used, straight from the CLI's own `context_window` field (falls back to reading the transcript on older versions) |
+| `week 41% ↻3d` | Weekly usage limit and time until it resets. Green → yellow at 50% → peach at 70% → red at 90%. Hidden when the CLI reports no limits |
+| `5h 71% ↻40m` | Five-hour limit — hidden until it passes 50%. Set `SHOW_5H=1` at the top of the script to pin it, `0` to drop it |
 | `$0.00` | Session cost, shown once it passes one cent |
+
+The usage-limit segments need a Claude Code build that passes `rate_limits` to the statusline (verified on 2.1.235 and 2.1.237). Older builds — and API-key accounts, which have no such limits — just omit them.
 
 `install.sh` wires it up automatically (needs `jq`). To set it up by hand, add this to `~/.claude/settings.json`:
 
