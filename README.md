@@ -22,12 +22,13 @@ The script handles everything:
 | Step | What it does |
 |---|---|
 | 1 | Detect the package manager (`dnf` / `apt` / `pacman`) |
-| 2 | Install dependencies — neovim, kitty, ripgrep, fd, node, gcc, make |
+| 2 | Install dependencies — neovim, kitty, ripgrep, fd, jq, node, gcc, make |
 | 3 | Install **Cascadia Code NF** if missing, and check for Thai fonts |
 | 4 | Symlink configs into `~/.config/` (**existing configs are moved to `.backup-<timestamp>`, never deleted**) |
 | 5 | Install neovim plugins at the versions pinned in `lazy-lock.json` |
 | 6 | Compile treesitter parsers |
 | 7 | Install LSP servers and formatters via mason |
+| 8 | Wire the statusline into `~/.claude/settings.json` if Claude Code is installed |
 
 Safe to re-run — already-correct symlinks are skipped.
 
@@ -62,6 +63,30 @@ Built directly on `lazy.nvim`, not a distro — readable, hackable, starts in **
 
 **Languages covered** — TypeScript / JavaScript / React / Vue / Svelte / Astro,
 HTML / CSS / Tailwind / Emmet, JSON / YAML, Python, Bash, Docker, Lua, Go, Rust, PHP, SQL, Prisma, GraphQL
+
+---
+
+### ✿ claude code statusline
+
+A one-line statusline for the Claude Code CLI, in the same Catppuccin Mocha palette as kitty and neovim.
+
+```
+✿ ~/dotfiles · ⎇ main ●3 · opus 5 · ███░░ 62% · $0.42
+```
+
+| Segment | Meaning |
+| --- | --- |
+| `✿ path` | Working directory, shortened to the last two components |
+| `⎇ branch` | Git branch — green when clean, yellow with `●n` when *n* files are modified. Hidden outside a repo |
+| `model` | Active model |
+| `bar %` | Context window used — teal, peach past 70%, red past 90%. Adapts to the 200k / 1M window |
+| `$0.00` | Session cost, shown once it passes one cent |
+
+`install.sh` wires it up automatically (needs `jq`). To set it up by hand, add this to `~/.claude/settings.json`:
+
+```json
+"statusLine": { "type": "command", "command": "~/dotfiles/claude/statusline.sh", "padding": 0 }
+```
 
 ---
 
@@ -121,6 +146,8 @@ lazy.nvim imports every file in that directory automatically.
 ```
 dotfiles/
 ├── install.sh              ← run this
+├── claude/
+│   └── statusline.sh       Claude Code CLI statusline
 ├── kitty/
 │   ├── kitty.conf          fonts · window · keybindings
 │   └── theme.conf          Catppuccin Mocha
@@ -140,6 +167,7 @@ dotfiles/
 - **git · curl · unzip · gcc · make** — for building treesitter parsers
 - **A Nerd Font** — `install.sh` fetches Cascadia Code NF if you don't have one
 - **node** — for the web LSP servers (ts / html / css / tailwind / eslint)
+- **jq** — only for the Claude Code statusline; everything else works without it
 
 ---
 

@@ -47,15 +47,15 @@ if [ "$PM" != none ]; then
   say "ติดตั้ง dependency (ต้องใส่รหัส sudo)"
   case "$PM" in
     dnf)    sudo dnf install -y neovim kitty git curl wget2-wget unzip tar \
-                gcc gcc-c++ make ripgrep fd-find nodejs npm python3-pip \
+                gcc gcc-c++ make ripgrep fd-find jq nodejs npm python3-pip \
                 google-noto-sans-thai-fonts ;;
     apt)    sudo apt-get update && sudo apt-get install -y \
                 neovim kitty git curl wget unzip tar \
-                gcc g++ make ripgrep fd-find nodejs npm python3-pip \
+                gcc g++ make ripgrep fd-find jq nodejs npm python3-pip \
                 fonts-noto-core ;;
     pacman) sudo pacman -Sy --needed --noconfirm \
                 neovim kitty git curl wget unzip tar \
-                gcc make ripgrep fd nodejs npm python-pip noto-fonts ;;
+                gcc make ripgrep fd jq nodejs npm python-pip noto-fonts ;;
   esac
   [ $? -eq 0 ] && ok "dependency พร้อม" || warn "บางแพ็กเกจติดตั้งไม่สำเร็จ — ดูข้อความด้านบน"
 fi
@@ -144,6 +144,28 @@ if [ "$TOOLS" -ge 15 ]; then
   ok "mason $TOOLS ตัว"
 else
   warn "mason ลงได้ $TOOLS ตัว (คาดว่า 18) — เปิด nvim แล้วสั่ง :Mason ดูตัวที่ตกหล่นได้"
+fi
+
+# ─── statusline ของ claude code (ถ้ามีติดตั้งไว้) ───────────
+if [ -d "$HOME/.claude" ]; then
+  say "ตั้งค่า statusline ของ claude code"
+  SL="$DOTFILES/claude/statusline.sh"
+  chmod +x "$SL" 2>/dev/null
+  CS="$HOME/.claude/settings.json"
+  if command -v jq >/dev/null 2>&1; then
+    [ -f "$CS" ] || echo '{}' > "$CS"
+    if jq --arg cmd "$SL" \
+         '.statusLine = {type:"command", command:$cmd, padding:0}' \
+         "$CS" > "$CS.tmp" 2>/dev/null; then
+      mv "$CS.tmp" "$CS"
+      ok "statusline พร้อมใช้ (เปิด claude ใหม่เพื่อเห็นผล)"
+    else
+      rm -f "$CS.tmp"
+      warn "แก้ $CS ไม่สำเร็จ — เพิ่ม statusLine เองได้จาก README"
+    fi
+  else
+    warn "ไม่มี jq — ข้าม statusline (ดูวิธีตั้งเองใน README)"
+  fi
 fi
 
 # ─── เสร็จ ──────────────────────────────────────────────────
