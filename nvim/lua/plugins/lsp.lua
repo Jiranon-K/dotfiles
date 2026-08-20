@@ -131,6 +131,7 @@ return {
           "bashls",                  -- shell script
           "dockerls",                -- Dockerfile
           "pyright",                 -- Python
+          "gopls",                   -- Go
         },
         automatic_enable = true,
       })

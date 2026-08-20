@@ -38,6 +38,7 @@ return {
         markdown = { "prettierd", "prettier", stop_after_first = true },
         graphql = { "prettierd", "prettier", stop_after_first = true },
         python = { "isort", "black" },
+        go = { "goimports", "gofumpt" },
         sh = { "shfmt" },
         bash = { "shfmt" },
       },
@@ -59,6 +60,7 @@ return {
     opts = {
       ensure_installed = {
         "stylua", "prettierd", "black", "isort", "shfmt", "eslint_d",
+        "gofumpt", "goimports",
       },
       run_on_start = true,
       auto_update = false,

@@ -185,6 +185,14 @@ dotfiles/
 
 ---
 
+## Related
+
+System-level stuff — Fedora packages, COPR/RPM Fusion repos, Flatpaks, GNOME extensions
+and the whole `dconf` tree — lives in a separate (private) repo: **`Jiranon-K/fedora-setup`**.
+Its `restore.sh` clones this repo and runs `install.sh` as its final step.
+
+---
+
 ## Requirements
 
 - **neovim ≥ 0.10** — the config uses `vim.uv` and `vim.lsp.config` (`install.sh` checks this)
