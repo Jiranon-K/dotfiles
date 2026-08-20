@@ -68,25 +68,45 @@ HTML / CSS / Tailwind / Emmet, JSON / YAML, Python, Bash, Docker, Lua, Go, Rust,
 
 ### ✿ claude code statusline
 
-A one-line statusline for the Claude Code CLI, in the same Catppuccin Mocha palette as kitty and neovim.
+Two lines for the Claude Code CLI, in the same Catppuccin Mocha palette as kitty and neovim.
 
 ```
-✿ ~/dotfiles · ⎇ main ●3 · opus 5 · ███░░ 62% · week 41% ↻3d · $0.42
+✿ ~/dotfiles   main●3 │ opus 5 · high │ tok 94.4k/200k 47%  ▰▰▰▰▰▰▰▰▰▱▱▱▱▱▱▱▱▱▱▱ │ $0.42
+usage  5h ▰▰▰▰▰▱▱▱▱▱▱▱▱▱▱▱▱▱ 33%  1h │ 7d ▰▰▰▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱ 17%  3d
 ```
+
+**Line 1 — this session**
 
 | Segment | Meaning |
 | --- | --- |
 | `✿ path` | Working directory, shortened to the last two components |
-| `⎇ branch` | Git branch — green when clean, yellow with `●n` when *n* files are modified. Hidden outside a repo |
-| `model` | Active model |
-| `bar %` | Context window used, straight from the CLI's own `context_window` field (falls back to reading the transcript on older versions) |
-| `week 41% ↻3d` | Weekly usage limit and time until it resets. Green → yellow at 50% → peach at 70% → red at 90%. Hidden when the CLI reports no limits |
-| `5h 71% ↻40m` | Five-hour limit — hidden until it passes 50%. Set `SHOW_5H=1` at the top of the script to pin it, `0` to drop it |
-| `$0.00` | Session cost, shown once it passes one cent |
+| ` branch●3` | Git branch — green when clean, yellow with `●n` when *n* files are modified. Hidden outside a repo |
+| `opus 5 · high` | Active model and reasoning effort (effort only shows on models that take it) |
+| `tok 94.4k/200k 47%` | Context window, straight from the CLI's own `context_window` field. Adapts to the 200k / 1M window |
+| `$0.42` | Session cost, shown once it passes one cent |
 
-The usage-limit segments need a Claude Code build that passes `rate_limits` to the statusline (verified on 2.1.235 and 2.1.237). Older builds — and API-key accounts, which have no such limits — just omit them.
+**Line 2 — account limits**
 
-`install.sh` wires it up automatically (needs `jq`). To set it up by hand, add this to `~/.claude/settings.json`:
+`5h` and `7d` are the rolling usage limits, each with a bar, a percentage, and the time until it
+resets. The whole line disappears when the CLI reports no limits — API-key accounts, or before the
+first request of a session.
+
+Bars run teal → yellow at 50% → peach at 70% → red at 90%, the same scale everywhere, so one glance
+across both lines tells you which gauge is the one to worry about.
+
+The usage-limit segments need a Claude Code build that passes `rate_limits` to the statusline
+(verified on 2.1.235 and 2.1.237). Older builds simply omit them.
+
+**Tuning** — the top of `claude/statusline.sh` has the knobs:
+
+| Variable | Default | |
+| --- | --- | --- |
+| `BAR_ON` / `BAR_OFF` | `▰` `▱` | Bar characters. Both exist in Cascadia Code NF — swapping in `￭` / `･` needs a CJK fallback font, and the widths stop lining up |
+| `CTX_W` / `USE_W` | `20` / `18` | Bar lengths. Drop them on a narrow terminal |
+| `SHOW_5H` | `1` | Set to `0` for the weekly limit only |
+
+`install.sh` wires it up automatically (needs `jq`). To set it up by hand, add this to
+`~/.claude/settings.json`:
 
 ```json
 "statusLine": { "type": "command", "command": "~/dotfiles/claude/statusline.sh", "padding": 0 }
