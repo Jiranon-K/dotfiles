@@ -114,6 +114,7 @@ link() {
 
 say "เชื่อม config"
 link "$DOTFILES/kitty" "$CONFIG/kitty" "kitty"
+link "$DOTFILES/ghostty" "$CONFIG/ghostty" "ghostty"
 link "$DOTFILES/nvim"  "$CONFIG/nvim"  "nvim"
 
 # ─── 5. ให้ lazy.nvim โหลดปลั๊กอิน ───────────────────────────

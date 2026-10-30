@@ -1,0 +1,108 @@
+# ╭──────────────────────────────────────────────╮
+# │   ghostty · minimal · macOS                  │
+# │   พอร์ตมาจาก kitty/kitty.conf                 │
+# ╰──────────────────────────────────────────────╯
+
+# ─── ธีม · Catppuccin Mocha (เหมือน kitty/theme.conf) ──
+background           = #12121c
+foreground           = #cdd6f4
+selection-background = #585b70
+selection-foreground = #cdd6f4
+cursor-color         = #f5e0dc
+cursor-text          = #1e1e2e
+
+palette = 0=#45475a
+palette = 1=#f38ba8
+palette = 2=#a6e3a1
+palette = 3=#f9e2af
+palette = 4=#89b4fa
+palette = 5=#f5c2e7
+palette = 6=#94e2d5
+palette = 7=#bac2de
+palette = 8=#585b70
+palette = 9=#f38ba8
+palette = 10=#a6e3a1
+palette = 11=#f9e2af
+palette = 12=#89b4fa
+palette = 13=#f5c2e7
+palette = 14=#94e2d5
+palette = 15=#a6adc8
+
+# ─── ฟอนต์ ────────────────────────────────────────
+font-family = JetBrainsMono Nerd Font Mono
+font-size   = 13
+
+# ภาษาไทย — JetBrains ไม่มีอักษรไทย ส่งช่วง Thai ไป Noto Sans Thai
+font-codepoint-map = U+0E00-U+0E7F=Noto Sans Thai
+
+# ★ จำเป็นสำหรับภาษาไทย: เพิ่มความสูง cell 25% (เหมือน modify_font cell_height 125%)
+# ไม่งั้นสระบน/วรรณยุกต์/สระล่างโดนตัด
+adjust-cell-height = 25%
+
+# ─── หน้าต่าง · minimal ───────────────────────────
+# "tabs" = ซ่อน titlebar แต่ยังเห็นแท็บ ("hidden" จะซ่อนแท็บไปด้วย)
+macos-titlebar-style = tabs
+window-padding-x     = 16
+window-padding-y     = 14
+window-padding-balance = true
+background-opacity   = 0.95
+background-blur      = 24
+window-width         = 150
+window-height        = 36
+window-save-state    = never
+confirm-close-surface = true
+
+# ─── เคอร์เซอร์ ───────────────────────────────────
+cursor-style       = bar
+cursor-style-blink = true
+
+# ─── เมาส์ / clipboard ────────────────────────────
+mouse-hide-while-typing = true
+copy-on-select          = clipboard
+
+# ─── macOS ────────────────────────────────────────
+# Option = Alt (จำเป็นสำหรับ alt+1..4) ข้อแลก: พิมพ์อักขระพิเศษด้วย Option ไม่ได้
+macos-option-as-alt = true
+quit-after-last-window-closed = true
+
+# ╭──────────────────────────────────────────────╮
+# │  ปุ่มลัด  (cmd+1..9 สลับแท็บเป็นค่า default แล้ว) │
+# ╰──────────────────────────────────────────────╯
+
+# ★ สำคัญสำหรับ Claude Code — ขึ้นบรรทัดใหม่โดยไม่ส่งข้อความ
+keybind = shift+enter=text:\x1b\r
+keybind = ctrl+enter=text:\x1b\r
+
+# คัดลอก / วาง
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+
+# แท็บ
+keybind = ctrl+shift+t=new_tab
+keybind = ctrl+shift+w=close_tab
+keybind = alt+1=goto_tab:1
+keybind = alt+2=goto_tab:2
+keybind = alt+3=goto_tab:3
+keybind = alt+4=goto_tab:4
+
+# แบ่งจอ
+keybind = ctrl+shift+enter=new_split:right
+keybind = ctrl+shift+minus=new_split:down
+keybind = ctrl+shift+left=goto_split:left
+keybind = ctrl+shift+right=goto_split:right
+keybind = ctrl+shift+up=goto_split:up
+keybind = ctrl+shift+down=goto_split:down
+keybind = ctrl+shift+z=toggle_split_zoom
+
+# ขนาดตัวอักษร
+keybind = ctrl+equal=increase_font_size:1
+keybind = ctrl+minus=decrease_font_size:1
+keybind = ctrl+0=reset_font_size
+
+# หน้าต่าง
+keybind = cmd+enter=toggle_maximize
+keybind = cmd+shift+enter=toggle_fullscreen
+
+# โหลด config ใหม่ / เปิด config
+keybind = cmd+shift+r=reload_config
+keybind = cmd+shift+comma=open_config
