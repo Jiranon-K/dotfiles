@@ -29,6 +29,16 @@ The script handles everything:
 | 6 | Compile treesitter parsers |
 | 7 | Install LSP servers and formatters via mason |
 | 8 | Wire the statusline into `~/.claude/settings.json` if Claude Code is installed |
+| 9 | Install the [Herdr](https://herdr.dev) app (Linux / macOS), link the Catppuccin Mocha theme + `herdr-skillshare` layout, select the theme |
+
+**macOS** is detected through Homebrew (`brew`). **Windows** has its own script, which installs Herdr and copies the same theme and layout (no kitty/neovim steps):
+
+```powershell
+git clone https://github.com/Jiranon-K/dotfiles.git $HOME\dotfiles
+powershell -ExecutionPolicy Bypass -File $HOME\dotfiles\install.ps1
+```
+
+Herdr files live in `herdr/` (`themes/`, `layouts/`, `mods/skillshare/`). The layout and mod come from [runkids/skillshare](https://github.com/runkids/skillshare/tree/main/herdr/skillshare); the theme is the kitty palette from `kitty/theme.conf`.
 
 Safe to re-run — already-correct symlinks are skipped.
 

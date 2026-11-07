@@ -34,6 +34,7 @@ say "ตรวจระบบ"
 if   command -v dnf     >/dev/null 2>&1; then PM=dnf
 elif command -v apt-get >/dev/null 2>&1; then PM=apt
 elif command -v pacman  >/dev/null 2>&1; then PM=pacman
+elif command -v brew    >/dev/null 2>&1; then PM=brew
 else PM=none; fi
 
 if [ "$PM" = none ]; then
@@ -44,7 +45,7 @@ fi
 
 # ─── 2. ติดตั้ง dependency ──────────────────────────────────
 if [ "$PM" != none ]; then
-  say "ติดตั้ง dependency (ต้องใส่รหัส sudo)"
+  say "ติดตั้ง dependency (brew ไม่ต้อง sudo, ตัวอื่นต้อง)"
   case "$PM" in
     dnf)    sudo dnf install -y neovim kitty git curl wget2-wget unzip tar \
                 gcc gcc-c++ make ripgrep fd-find jq nodejs npm python3-pip \
@@ -56,6 +57,8 @@ if [ "$PM" != none ]; then
     pacman) sudo pacman -Sy --needed --noconfirm \
                 neovim kitty git curl wget unzip tar \
                 gcc make ripgrep fd jq nodejs npm python-pip noto-fonts ;;
+    brew)   brew install neovim git curl wget unzip jq ripgrep fd node python \
+              && brew install --cask kitty font-caskaydia-cove-nerd-font ;;
   esac
   [ $? -eq 0 ] && ok "dependency พร้อม" || warn "บางแพ็กเกจติดตั้งไม่สำเร็จ — ดูข้อความด้านบน"
 fi
@@ -169,6 +172,41 @@ if [ -d "$HOME/.claude" ]; then
   fi
 fi
 
+# ─── herdr (Linux + macOS; Windows uses install.ps1) ─────────
+say "Herdr"
+HERDR_HOME="${HERDR_APP_HOME:-$CONFIG/herdr-app}"
+if command -v herdr-app >/dev/null 2>&1 \
+   || [ -d "$HOME/Applications/Herdr.app" ] || [ -d /Applications/Herdr.app ]; then
+  ok "Herdr already installed"
+else
+  # Official installer: verifies the release sha256, no sudo needed.
+  if curl -fsSL https://releases.herdr.dev/app/install.sh | sh; then
+    ok "Herdr installed"
+  else
+    warn "Herdr install failed — see https://herdr.dev/download"
+  fi
+fi
+
+# Link only our own files: Herdr rewrites its shipped layouts/mods on every start,
+# so the whole herdr-app folder must stay Herdr's.
+link "$DOTFILES/herdr/themes/catppuccin-mocha.json" "$HERDR_HOME/themes/catppuccin-mocha.json" "herdr theme"
+link "$DOTFILES/herdr/layouts/herdr-skillshare.json" "$HERDR_HOME/layouts/herdr-skillshare.json" "herdr layout"
+link "$DOTFILES/herdr/layouts/herdr-skillshare.png"  "$HERDR_HOME/layouts/herdr-skillshare.png"  "herdr layout preview"
+link "$DOTFILES/herdr/mods/skillshare"               "$HERDR_HOME/mods/skillshare"               "herdr skillshare mod"
+
+# Select the theme without touching the rest of settings.json.
+if command -v jq >/dev/null 2>&1; then
+  HS="$HERDR_HOME/settings.json"
+  [ -f "$HS" ] || echo '{}' > "$HS"
+  if jq '.theme = "catppuccin-mocha"' "$HS" > "$HS.tmp" 2>/dev/null; then
+    mv "$HS.tmp" "$HS"; ok "Herdr theme: catppuccin-mocha"
+  else
+    rm -f "$HS.tmp"; warn "could not edit $HS — pick the theme in Herdr settings"
+  fi
+else
+  warn "jq missing — pick catppuccin-mocha in Herdr settings"
+fi
+
 # ─── เสร็จ ──────────────────────────────────────────────────
 cat <<FINISH
 
@@ -177,6 +215,7 @@ ${c_ok}เสร็จแล้ว!${c_off}
   ${c_dim}เปิดใช้งาน${c_off}
     kitty          เปิดเทอร์มินัล (ปิด-เปิดใหม่ถ้าเปิดอยู่)
     nvim           เปิด editor
+    herdr-app      Herdr + layout herdr-skillshare (ctrl+shift+l เพื่อสลับ layout)
 
   ${c_dim}3 ปุ่มที่ต้องจำ${c_off}
     Space Space    หาไฟล์
