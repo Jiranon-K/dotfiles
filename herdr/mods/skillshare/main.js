@@ -24,13 +24,24 @@ const RECENT = "skillshare.recent.v1"; // install sources, newest first
 const HIDE_DISABLED = "skillshare.hideDisabled.v1"; // false lists disabled rows; unset or true hides them
 const IN_SYNC_VIEW = "skillshare.inSyncView.v1"; // "list", or unset for In sync skills/agents grouped by source
 const POLL = 20000, CHECK_EVERY = 10 * 60 * 1000, MACHINES_POLL = 60000, NOTICE_MS = 4000;
-const PATHS = 'PATH="$HOME/.local/bin:$HOME/go/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"; export PATH';
+// /usr/bin and /bin come before the inherited PATH so Git for Windows' sh finds its own find/sort/rm, not System32's.
+const PATHS = 'PATH="$HOME/.local/bin:$HOME/go/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"; export PATH';
+// Windows: Git for Windows ships sh but leaves it off PATH. Used only when plain "sh" cannot start.
+const GIT_SH = ["C:\\Program Files\\Git\\usr\\bin\\sh.exe", "C:\\Program Files (x86)\\Git\\usr\\bin\\sh.exe"];
+const runSh = async (args, on) => {
+  try { return await exec("sh", args, { on }); }
+  catch (e) {
+    if (on) throw e; // another machine: its own PATH decides
+    for (const p of GIT_SH) { try { return await exec(p, args, { on }); } catch (_) { /* try the next */ } }
+    throw e;
+  }
+};
 
 // ---- Running skillshare on the space's machine ----
 
 // Herdr's adapter for the job runner (jobs.js): every script gets the usual PATH.
 const runner = createRunner({
-  exec: (script, args, on) => exec("sh", ["-c", `${PATHS}\n${script}`, "skillshare-panel", ...args], { on })
+  exec: (script, args, on) => runSh(["-c", `${PATHS}\n${script}`, "skillshare-panel", ...args], on)
     .catch((e) => ({ code: 127, stdout: "", stderr: String(e.message ?? e) })),
   readText: (path, on) => readTextFile(path, { on }),
 });
